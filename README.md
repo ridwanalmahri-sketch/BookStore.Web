@@ -3,7 +3,10 @@
 Aplikasi web toko buku online berbasis front-end murni (HTML5, CSS3, dan Vanilla JavaScript) yang dirancang khusus untuk memenuhi seluruh indikator penilaian dan spesifikasi tugas **Ujian Tengah Semester (UTS) Pemrograman Web 1**.
 
 ---
-
+- Nama           : M.Ridwan Al Mahri
+- NIM            : 312510157
+- Kelas          : I251B
+- Mata Kuliah    : Pemograman Web
 ## 📁 Struktur Folder Proyek
 Sesuai dengan ketentuan struktur direktori yang diminta pada lembar soal tugas UTS:
 
