@@ -37,7 +37,7 @@ tugas-uts-web1/
 
 ---
 
-## 🎯 Pemenuhan Indikator Penilaian Dosen
+## 🎯 Pemenuhan Indikator
 
 ### 1. Struktur HTML yang Semantik dan Valid
 - Menggunakan elemen HTML5 semantik: `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`, `<figure>`, `<fieldset>`, `<legend>`, `<form>`, dan `<table>`.
