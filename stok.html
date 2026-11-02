@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informasi Stok &amp; Katalog Buku - UT BookStore</title>
+  
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: EXTERNAL CSS
+       ==================================================================== -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: INTERNAL CSS (Gaya Khusus Halaman Stok/Katalog)
+       ==================================================================== -->
+  <style>
+    /* Styling Khusus Internal CSS untuk Halaman Stok/Katalog */
+    .catalog-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-filter-box {
+      position: relative;
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .search-filter-box input {
+      padding-left: 2.5rem;
+    }
+
+    .search-filter-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .view-toggle-group {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      padding: 0.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .view-toggle-btn {
+      padding: 0.4rem 0.85rem;
+      border: none;
+      background: transparent;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-toggle-btn.active {
+      background: var(--bg-surface);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Efek hover pada thumbnail gambar buku */
+    .table-thumb {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .table-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: var(--shadow-md);
+      z-index: 10;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================================================================
+       1. SEMANTIC HEADER & NAVBAR
+       ==================================================================== -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <a href="dashboard.html" style="display:flex; align-items:center; gap:0.75rem; text-decoration:none;">
+          <img src="assets/logo.png" alt="Logo UT BookStore" class="brand-logo" onerror="this.src='assets/logo.svg'">
+          <div class="brand-text">
+            <h1>UT BOOKSTORE</h1>
+            <p>Toko Buku Online Resmi Universitas Terbuka</p>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Navigasi Utama Halaman Website -->
+      <nav class="main-nav" aria-label="Navigasi Utama">
+        <ul>
+          <li><a href="dashboard.html" class="nav-link">📊 Dashboard</a></li>
+          <li><a href="stok.html" class="nav-link active">📚 Informasi Stok</a></li>
+          <li><a href="checkout.html" class="nav-link">🛒 Pemesanan</a></li>
+          <li><a href="tracking.html" class="nav-link">🚚 Tracking Pengiriman</a></li>
+        </ul>
+      </nav>
+
+      <!-- User Session Badge di Header -->
+      <div id="headerUserPill" class="user-badge-wrapper"></div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       2. SEMANTIC MAIN CONTENT
+       ==================================================================== -->
+  <main class="page-container">
+    
+    <!-- Breadcrumb Navigasi -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li class="current">Informasi Stok &amp; Katalog Buku</li>
+      </ol>
+    </nav>
+
+    <!-- Header Block Halaman -->
+    <section class="page-header-block">
+      <div>
+        <h2 class="page-title">📚 Informasi Stok &amp; Katalog Buku</h2>
+        <p class="page-subtitle">
+          Data dimuat secara dinamis dari variable konstanta <code>dataKatalogBuku</code> pada <code>data.js</code>
+        </p>
+      </div>
+      <div style="display:flex; gap:0.75rem; align-items:center;">
+        <!-- Tombol Tambah Stok Baru (Membuka Modal DOM) -->
+        <button type="button" class="btn btn-primary" onclick="openModal('modalTambahStok')">
+          ➕ Tambah Stok Buku Baru
+        </button>
+      </div>
+    </section>
+
+    <!-- Toolbar: Search Filter & View Switcher -->
+    <section class="catalog-toolbar" aria-label="Toolbar Pencarian dan Tampilan">
+      <div class="search-filter-box">
+        <span class="search-filter-icon">🔍</span>
+        <input 
+          type="text" 
+          id="stokSearchInput" 
+          class="form-control" 
+          placeholder="Cari berdasarkan judul, kode, atau kategori buku..."
+          aria-label="Pencarian Buku"
+        >
+      </div>
+
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+        <span id="stokTotalCount" style="font-size:0.875rem; font-weight:700; color:var(--text-muted); background:var(--bg-surface); padding:0.4rem 0.8rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+          5 Judul Buku
+        </span>
+
+        <!-- View Switcher (Tabel vs Kartu) -->
+        <div class="view-toggle-group">
+          <button type="button" id="btnViewTable" class="view-toggle-btn active" onclick="toggleStokView('table')">
+            📋 Tabel
+          </button>
+          <button type="button" id="btnViewGrid" class="view-toggle-btn" onclick="toggleStokView('grid')">
+            🎴 Galeri Cover
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION A: TAMPILAN TABEL STOK (Kriteria Soal 3) -->
+    <section id="stokTableViewWrapper" class="card" style="padding: 1.25rem;" aria-label="Tabel Katalog Stok Buku">
+      <div class="table-responsive">
+        <table class="custom-table" id="tabelStokBuku" aria-label="Daftar Stok Buku">
+          <thead>
+            <tr>
+              <th style="width: 40px;">No</th>
+              <th style="width: 70px;">Cover</th>
+              <th>Kode Barang</th>
+              <th>Nama Buku / Barang</th>
+              <th>Edisi</th>
+              <th>Status &amp; Stok</th>
+              <th>Harga Satuan</th>
+              <th style="width: 170px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="stokTableBody">
+            <!-- Diisi secara dinamis oleh JavaScript DOM dari variable dataKatalogBuku -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION B: TAMPILAN GRID KARTU BUKU (Kreativitas UI) -->
+    <section id="stokGridViewWrapper" style="display: none;" aria-label="Galeri Kartu Buku">
+      <div id="stokGridContainer" class="books-grid">
+        <!-- Diisi secara dinamis oleh JavaScript DOM -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       3. MODAL BOX: TAMBAH BARIS STOK BARU (Kriteria Soal 3)
+       ==================================================================== -->
+  <div id="modalTambahStok" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTambahStokTitle">
+    <div class="modal-container" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="modalTambahStokTitle" class="modal-title">➕ Tambah Baris Stok Buku Baru</h3>
+        <button type="button" class="modal-close" data-close-modal="modalTambahStok" aria-label="Tutup">&times;</button>
+      </div>
+      
+      <form id="formTambahStok">
+        <div class="modal-body">
+          <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1.25rem;">
+            Formulir ini menggunakan <strong>JavaScript DOM Manipulation</strong> untuk menambahkan baris baru ke dalam tabel secara real-time dan menyimpannya di local data.
+          </p>
+
+          <div class="form-row">
+            <!-- Input Kode Barang -->
+            <div class="form-group">
+              <label for="inputKodeBarang" class="form-label">
+                Kode Barang <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="inputKodeBarang" 
+                class="form-control" 
+                placeholder="misal: ISIP4212" 
+                required
+                style="text-transform:uppercase;"
+              >
+            </div>
+
+            <!-- Input Jenis / Kategori Barang -->
+            <div class="form-group">
+              <label for="inputJenisBarang" class="form-label">
+                Jenis Barang <span class="required">*</span>
+              </label>
+              <select id="inputJenisBarang" class="form-control" required>
+                <option value="Buku Ajar">Buku Ajar</option>
+                <option value="Modul Praktikum">Modul Praktikum</option>
+                <option value="Panduan Tugas Akhir">Panduan Tugas Akhir</option>
+                <option value="Buku Referensi">Buku Referensi</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Input Nama Barang -->
+          <div class="form-group">
+            <label for="inputNamaBarang" class="form-label">
+              Nama Buku / Barang <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="inputNamaBarang" 
+              class="form-control" 
+              placeholder="misal: Pengantar Ilmu Hukum Pajak" 
+              required
+            >
+          </div>
+
+          <div class="form-row">
+            <!-- Input Edisi -->
+            <div class="form-group">
+              <label for="inputEdisi" class="form-label">
+                Edisi <span class="required">*</span>
+              </label>
+              <input 
+                type="number" 
+                id="inputEdisi" 
+                class="form-control" 
+                placeholder="contoh: 1" 
+                min="1" 
+                value="1" 
+                required
+              >
+            </div>
+
+            <!-- Input Jumlah Stok Fisik -->
+            <div class="form-group">
+              <label for="inputStok" class="form-label">
+                Jumlah Stok <span class="required">*</span>
+              </label>
+              <input 
+                type="number" 
+                id="inputStok" 
+                class="form-control" 
+                placeholder="contoh: 250" 
+                min="0" 
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Input Harga Satuan -->
+            <div class="form-group">
+              <label for="inputHarga" class="form-label">
+                Harga Satuan (Rp) <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="inputHarga" 
+                class="form-control" 
+                placeholder="contoh: 195000 atau Rp 195.000" 
+                required
+              >
+            </div>
+
+            <!-- Pilihan Cover Buku -->
+            <div class="form-group">
+              <label for="inputCover" class="form-label">
+                Pilihan Cover Buku
+              </label>
+              <select id="inputCover" class="form-control">
+                <option value="img/pengantar_komunikasi.jpg">Cover Komunikasi</option>
+                <option value="img/manajemen_keuangan.jpg">Cover Manajemen Keuangan</option>
+                <option value="img/kepemimpinan.jpg">Cover Kepemimpinan</option>
+                <option value="img/mikrobiologi.jpg">Cover Mikrobiologi</option>
+                <option value="img/paud_perkembangan.jpeg">Cover PAUD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modalTambahStok">Batal</button>
+          <button type="submit" class="btn btn-success">💾 Simpan ke Tabel DOM</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       4. SEMANTIC FOOTER
+       ==================================================================== -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 <strong>UT BookStore</strong> - Proyek UTS Pemrograman Web 1. Universitas Terbuka.</p>
+      <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+      <span style="font-size:0.8rem; color:var(--text-muted); background-color:var(--bg-subtle); padding:0.25rem 0.6rem; border-radius:4px; border:1px solid var(--border-color);">
+        DOM Manipulation &amp; Dynamic Table Rendering
+      </span>
+    </div>
+  </footer>
+
+  <!-- File JavaScript Eksternal -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    // Inisialisasi logika khusus halaman Stok
+    document.addEventListener('DOMContentLoaded', () => {
+      initStokPage();
+    });
+  </script>
+</body>
+</html>

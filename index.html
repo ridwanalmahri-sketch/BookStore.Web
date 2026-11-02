@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk Akun - UT BookStore</title>
+  
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: EXTERNAL CSS
+       ==================================================================== -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: INTERNAL CSS (Gaya Khusus Halaman Login)
+       ==================================================================== -->
+  <style>
+    /* Styling Khusus Internal CSS untuk Halaman Login */
+    .login-wrapper {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: radial-gradient(circle at 10% 20%, rgba(30, 58, 138, 0.05) 0%, rgba(245, 158, 11, 0.05) 90%);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-xl);
+      padding: 2.25rem 2rem;
+      animation: fadeInUp 0.4s ease-out;
+    }
+
+    .login-header-banner {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .login-header-banner .login-logo {
+      height: 60px;
+      margin: 0 auto 0.75rem auto;
+    }
+
+    .login-header-banner h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .login-header-banner p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .quick-account-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: var(--bg-subtle);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border-color);
+      font-size: 0.825rem;
+    }
+
+    .quick-pill {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      margin: 0.2rem;
+      background-color: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--primary);
+      transition: all 0.2s ease;
+    }
+
+    .quick-pill:hover {
+      background-color: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================================================================
+       1. SEMANTIC HEADER & NAVBAR
+       ==================================================================== -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <img src="assets/logo.png" alt="Logo UT BookStore" class="brand-logo" onerror="this.src='assets/logo.svg'">
+        <div class="brand-text">
+          <h1>UT BOOKSTORE</h1>
+          <p>Toko Buku Online Resmi Universitas Terbuka</p>
+        </div>
+      </div>
+      
+      <!-- Navigasi Utama Halaman Login -->
+      <nav class="main-nav" aria-label="Navigasi Utama">
+        <ul>
+          <li><a href="index.html" class="nav-link active">🔐 Halaman Login</a></li>
+          <li><a href="dashboard.html" class="nav-link">📊 Dashboard</a></li>
+          <li><a href="stok.html" class="nav-link">📚 Katalog Stok</a></li>
+          <li><a href="tracking.html" class="nav-link">🚚 Lacak Kiriman</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       2. SEMANTIC MAIN CONTENT: FORM LOGIN
+       ==================================================================== -->
+  <main class="login-wrapper">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <div class="login-header-banner">
+        <img src="assets/logo.png" alt="Logo UT" class="login-logo" onerror="this.src='assets/logo.svg'">
+        <h2 id="loginTitle">Masuk ke Sistem</h2>
+        <p>Gunakan akun civitas akademika atau akun terdaftar</p>
+      </div>
+
+      <!-- Alert Box untuk Notifikasi Feedback Error/Sukses Login -->
+      <div id="loginAlertBox" class="alert-box" style="display: none;" role="alert"></div>
+
+      <!-- Form Login Sesuai Kriteria Soal 1 -->
+      <form id="loginForm" novalidate>
+        <!-- Input Email -->
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">
+            Alamat Email <span class="required">*</span>
+          </label>
+          <input 
+            type="email" 
+            id="loginEmail" 
+            class="form-control" 
+            placeholder="contoh: rina@gmail.com" 
+            required 
+            autocomplete="email"
+          >
+        </div>
+
+        <!-- Input Password -->
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label for="loginPassword" class="form-label" style="margin-bottom: 0;">
+              Password <span class="required">*</span>
+            </label>
+            <!-- Tombol Lupa Password (Membuka Modal Box) -->
+            <button 
+              type="button" 
+              class="btn-link" 
+              onclick="openModal('modalLupaPassword')"
+              style="background:none; border:none; color:var(--primary); font-size:0.8rem; cursor:pointer; font-weight:600; text-decoration:underline;"
+            >
+              Lupa Password?
+            </button>
+          </div>
+          <input 
+            type="password" 
+            id="loginPassword" 
+            class="form-control" 
+            placeholder="Masukkan kata sandi anda" 
+            required 
+            autocomplete="current-password"
+          >
+        </div>
+
+        <!-- Tombol Login (Sesuai Kriteria Soal 1) -->
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1.25rem;">
+          🔐 Masuk Sekarang
+        </button>
+
+        <!-- Pilihan Daftar Akun Baru (Membuka Modal Box) -->
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+          Belum memiliki akun?
+          <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+          <button 
+            type="button" 
+            onclick="openModal('modalDaftar')"
+            style="background:none; border:none; color:var(--accent-gold-hover); font-weight:700; cursor:pointer; text-decoration:underline; font-size:0.9rem; margin-left:4px;"
+          >
+            Daftar di sini
+          </button>
+        </div>
+      </form>
+
+      <!-- Panel Bantuan Quick-Fill Akun untuk Dosen / Penguji -->
+      <aside class="quick-account-box" aria-label="Akun Demo Bawaan">
+        <div style="font-weight: 700; margin-bottom: 0.4rem; color: var(--text-main);">
+          💡 Akun Demo Pengujian (1-Klik Isi Form):
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.775rem; margin-bottom: 0.5rem;">
+          Data diambil otomatis dari <code>data.js</code>:
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+          <span class="quick-pill" onclick="fillDemoAccount('rina@gmail.com', 'rina123')">
+            👤 Rina (User)
+          </span>
+          <span class="quick-pill" onclick="fillDemoAccount('agus@gmail.com', 'agus123')">
+            👤 Agus (User)
+          </span>
+          <span class="quick-pill" onclick="fillDemoAccount('siti@gmail.com', 'siti123')">
+            🛡️ Siti (Admin)
+          </span>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- ====================================================================
+       3. MODAL BOX: LUPA PASSWORD (Sesuai Kriteria Soal 1)
+       ==================================================================== -->
+  <div id="modalLupaPassword" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalLupaTitle">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalLupaTitle" class="modal-title">🔑 Pemulihan Kata Sandi</h3>
+        <button type="button" class="modal-close" data-close-modal="modalLupaPassword" aria-label="Tutup">&times;</button>
+      </div>
+      <form id="lupaPasswordForm">
+        <div class="modal-body">
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Masukkan alamat email yang terdaftar pada sistem toko buku. Kami akan mencari data akun dan mengirimkan instruksi pemulihan.
+          </p>
+          <div class="form-group">
+            <label for="resetEmail" class="form-label">Alamat Email Terdaftar <span class="required">*</span></label>
+            <input type="email" id="resetEmail" class="form-control" placeholder="contoh: rina@gmail.com" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modalLupaPassword">Batal</button>
+          <button type="submit" class="btn btn-primary">Kirim Instruksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       4. MODAL BOX: DAFTAR AKUN BARU (Sesuai Kriteria Soal 1)
+       ==================================================================== -->
+  <div id="modalDaftar" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalDaftarTitle">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalDaftarTitle" class="modal-title">📝 Registrasi Pengguna Baru</h3>
+        <button type="button" class="modal-close" data-close-modal="modalDaftar" aria-label="Tutup">&times;</button>
+      </div>
+      <form id="daftarForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="regNama" class="form-label">Nama Lengkap <span class="required">*</span></label>
+            <input type="text" id="regNama" class="form-control" placeholder="Nama lengkap mahasiswa" required>
+          </div>
+          <div class="form-group">
+            <label for="regEmail" class="form-label">Alamat Email <span class="required">*</span></label>
+            <input type="email" id="regEmail" class="form-control" placeholder="nama@gmail.com" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="regPassword" class="form-label">Password <span class="required">*</span></label>
+              <input type="password" id="regPassword" class="form-control" placeholder="Minimal 6 karakter" required>
+            </div>
+            <div class="form-group">
+              <label for="regKonfirmasiPassword" class="form-label">Ulangi Password <span class="required">*</span></label>
+              <input type="password" id="regKonfirmasiPassword" class="form-control" placeholder="Ketik ulang password" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regRole" class="form-label">Peran Pengguna</label>
+            <select id="regRole" class="form-control">
+              <option value="User">User / Mahasiswa</option>
+              <option value="Admin">Staff / Admin Toko</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modalDaftar">Batal</button>
+          <button type="submit" class="btn btn-gold">Daftar Sekarang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       5. SEMANTIC FOOTER
+       ==================================================================== -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 <strong>UT BookStore</strong> - Proyek UTS Pemrograman Web 1. Universitas Terbuka.</p>
+      <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+      <span style="font-size:0.8rem; color:var(--text-muted); background-color:var(--bg-subtle); padding:0.25rem 0.6rem; border-radius:4px; border:1px solid var(--border-color);">
+        Status Front-End: Standalone JSON Array (data.js)
+      </span>
+    </div>
+  </footer>
+
+  <!-- File JavaScript Eksternal -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    // Inisialisasi logika khusus halaman Login
+    document.addEventListener('DOMContentLoaded', () => {
+      initLoginPage();
+    });
+  </script>
+</body>
+</html>

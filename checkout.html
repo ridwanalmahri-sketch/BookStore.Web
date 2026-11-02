@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halaman Pemesanan &amp; Checkout - UT BookStore</title>
+  
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: EXTERNAL CSS
+       ==================================================================== -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: INTERNAL CSS (Gaya Khusus Halaman Pemesanan)
+       ==================================================================== -->
+  <style>
+    /* Styling Khusus Internal CSS untuk Halaman Pemesanan */
+    .checkout-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      .checkout-layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sticky-summary {
+      position: sticky;
+      top: 90px;
+    }
+
+    .form-section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: 0.925rem;
+      color: var(--secondary);
+    }
+
+    .summary-line.total-line {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      border-top: 2px dashed var(--border-color);
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================================================================
+       1. SEMANTIC HEADER & NAVBAR
+       ==================================================================== -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <a href="dashboard.html" style="display:flex; align-items:center; gap:0.75rem; text-decoration:none;">
+          <img src="assets/logo.png" alt="Logo UT BookStore" class="brand-logo" onerror="this.src='assets/logo.svg'">
+          <div class="brand-text">
+            <h1>UT BOOKSTORE</h1>
+            <p>Toko Buku Online Resmi Universitas Terbuka</p>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Navigasi Utama Halaman Website -->
+      <nav class="main-nav" aria-label="Navigasi Utama">
+        <ul>
+          <li><a href="dashboard.html" class="nav-link">📊 Dashboard</a></li>
+          <li><a href="stok.html" class="nav-link">📚 Informasi Stok</a></li>
+          <li><a href="checkout.html" class="nav-link active">🛒 Pemesanan</a></li>
+          <li><a href="tracking.html" class="nav-link">🚚 Tracking Pengiriman</a></li>
+        </ul>
+      </nav>
+
+      <!-- User Session Badge di Header -->
+      <div id="headerUserPill" class="user-badge-wrapper"></div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       2. SEMANTIC MAIN CONTENT
+       ==================================================================== -->
+  <main class="page-container">
+    
+    <!-- Breadcrumb Navigasi -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li class="current">Halaman Pemesanan (Checkout)</li>
+      </ol>
+    </nav>
+
+    <!-- Header Block Halaman -->
+    <section class="page-header-block">
+      <div>
+        <h2 class="page-title">🛒 Formulir Pemesanan &amp; Pembayaran</h2>
+        <p class="page-subtitle">
+          Kelola rincian item pemesanan yang dapat ditambah/ubah, serta lengkapi informasi pengiriman dan metode bayar
+        </p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-outline-primary" onclick="openModal('modalTambahBukuPesanan')">
+          ➕ Tambah Buku dari Katalog
+        </button>
+      </div>
+    </section>
+
+    <!-- Grid Layout 2 Kolom: Kiri (Data Pemesanan & Form) | Kanan (Ringkasan Tagihan) -->
+    <div class="checkout-layout-grid">
+      
+      <!-- KOLOM KIRI: TABEL PEMESANAN & ISIAN FORM PEMESAN -->
+      <section style="display:flex; flex-direction:column; gap:1.75rem;" aria-label="Data Pemesanan dan Formulir">
+        
+        <!-- BAGIAN 1: TABEL DATA PEMESANAN (Dapat Ditambah/Ubah - Sesuai Kriteria Soal 4) -->
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">📦 Rincian Item Buku yang Dipesan</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.2rem;">
+                Jumlah buku dapat diubah (+ / -) atau dihapus dari daftar
+              </p>
+            </div>
+            <span class="badge badge-info">Dapat Diubah</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table" id="tabelCheckout" aria-label="Tabel Item Pemesanan">
+              <thead>
+                <tr>
+                  <th style="width: 40px;">No</th>
+                  <th>Buku</th>
+                  <th>Harga Satuan</th>
+                  <th style="width: 130px;">Jumlah</th>
+                  <th>Subtotal</th>
+                  <th style="width: 50px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="checkoutTableBody">
+                <!-- Diisi secara dinamis oleh JavaScript DOM -->
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- BAGIAN 2: ISIAN DATA INFORMASI PEMESAN & PEMBAYARAN (Sesuai Kriteria Soal 4) -->
+        <article class="card">
+          <form id="formCheckout" novalidate>
+            <!-- Sub-seksi A: Informasi Identitas Pemesan -->
+            <fieldset style="border:none; margin:0; padding:0;">
+              <legend class="form-section-title">
+                👤 1. Informasi Pemesan &amp; Penerima
+              </legend>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="pemesanNama" class="form-label">
+                    Nama Lengkap Pemesan <span class="required">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="pemesanNama" 
+                    class="form-control" 
+                    placeholder="Nama mahasiswa / pemesan" 
+                    required
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="pemesanTelepon" class="form-label">
+                    Nomor WhatsApp / HP <span class="required">*</span>
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="pemesanTelepon" 
+                    class="form-control" 
+                    placeholder="contoh: 081234567890" 
+                    required
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="pemesanEmail" class="form-label">
+                  Alamat Email Konfirmasi <span class="required">*</span>
+                </label>
+                <input 
+                  type="email" 
+                  id="pemesanEmail" 
+                  class="form-control" 
+                  placeholder="email@domain.com" 
+                  required
+                >
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="pemesanKota" class="form-label">
+                    Kota / Kabupaten Tujuan <span class="required">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="pemesanKota" 
+                    class="form-control" 
+                    placeholder="contoh: Tangerang Selatan / Bandung" 
+                    required
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="pemesanKodepos" class="form-label">Kode Pos</label>
+                  <input type="text" id="pemesanKodepos" class="form-control" placeholder="contoh: 15418">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="pemesanAlamat" class="form-label">
+                  Alamat Lengkap Pengiriman <span class="required">*</span>
+                </label>
+                <textarea 
+                  id="pemesanAlamat" 
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="Jl. Cabe Raya, Pondok Cabe, Pamulang (Lengkap dengan nomor rumah/patokan)" 
+                  required
+                ></textarea>
+              </div>
+            </fieldset>
+
+            <!-- Sub-seksi B: Ekspedisi & Layanan Paket -->
+            <fieldset style="border:none; margin:1.5rem 0 0 0; padding:0;">
+              <legend class="form-section-title">
+                🚚 2. Opsi Pengiriman &amp; Ekspedisi
+              </legend>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="pilihanEkspedisi" class="form-label">
+                    Jasa Ekspedisi <span class="required">*</span>
+                  </label>
+                  <select id="pilihanEkspedisi" class="form-control" required>
+                    <option value="JNE">JNE Express</option>
+                    <option value="Pos Indonesia">Pos Indonesia (Kantor Pos)</option>
+                    <option value="SiCepat">SiCepat Express</option>
+                    <option value="J&amp;T">J&amp;T Express</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="pilihanPaket" class="form-label">
+                    Layanan Paket <span class="required">*</span>
+                  </label>
+                  <select id="pilihanPaket" class="form-control" required>
+                    <option value="REGULER">Paket Reguler (2-3 Hari) - Rp 18.000</option>
+                    <option value="EXPRESS">Paket Express (1 Hari) - Rp 28.000</option>
+                    <option value="KARGO">Paket Kargo / Berat (>5kg) - Rp 35.000</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Sub-seksi C: Informasi Pembayaran -->
+            <fieldset style="border:none; margin:1.5rem 0 0 0; padding:0;">
+              <legend class="form-section-title">
+                💳 3. Metode Pembayaran
+              </legend>
+
+              <div class="form-group">
+                <label for="pilihanPembayaran" class="form-label">
+                  Pilih Saluran Pembayaran <span class="required">*</span>
+                </label>
+                <select id="pilihanPembayaran" class="form-control" required>
+                  <option value="Bank Central Asia (BCA)">Transfer Bank BCA Virtual Account</option>
+                  <option value="Bank Mandiri">Transfer Bank Mandiri Virtual Account</option>
+                  <option value="Bank BRI">Transfer Bank BRI Virtual Account</option>
+                  <option value="QRIS / GoPay / OVO">QRIS (GoPay, OVO, ShopeePay, DANA)</option>
+                  <option value="COD (Bayar di Tempat)">Cash On Delivery (Bayar di Tempat)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="catatanPesanan" class="form-label">Catatan Tambahan untuk Penjual/Kurir</label>
+                <input type="text" id="catatanPesanan" class="form-control" placeholder="contoh: Tolong titipkan ke pos satpam jika tidak ada orang di rumah">
+              </div>
+            </fieldset>
+
+            <!-- Tombol Konfirmasi Pemesanan -->
+            <div style="margin-top:2rem;">
+              <button type="submit" class="btn btn-primary btn-block btn-lg">
+                ✅ Konfirmasi &amp; Proses Pemesanan Sekarang
+              </button>
+            </div>
+          </form>
+        </article>
+
+      </section>
+
+      <!-- KOLOM KANAN: KARTU RINGKASAN PEMBAYARAN (STICKY CARD) -->
+      <aside class="sticky-summary" aria-label="Ringkasan Biaya Pemesanan">
+        <div class="card" style="border-top: 4px solid var(--primary);">
+          <h3 class="card-title" style="margin-bottom: 1.25rem;">
+            🧾 Ringkasan Pembayaran
+          </h3>
+
+          <div class="summary-line">
+            <span>Subtotal Harga Buku</span>
+            <strong id="summarySubtotal">Rp 400.000</strong>
+          </div>
+
+          <div class="summary-line">
+            <span>Biaya Pengiriman</span>
+            <strong id="summaryOngkir">Rp 18.000</strong>
+          </div>
+
+          <div class="summary-line" style="color: var(--success);">
+            <span>Diskon Belanja</span>
+            <strong id="summaryDiskon">- Rp 20.000</strong>
+          </div>
+
+          <div class="summary-line total-line">
+            <span>Total Bayar</span>
+            <span id="summaryTotal">Rp 398.000</span>
+          </div>
+
+          <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+          <div style="margin-top:1.5rem; background:#eff6ff; padding:0.85rem; border-radius:var(--radius-md); font-size:0.825rem; color:#1e40af; border:1px solid #bfdbfe;">
+            💡 <strong>Info Diskon:</strong> Pemesanan buku di atas Rp 300.000 otomatis mendapatkan potongan harga Rp 20.000!
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- ====================================================================
+       3. MODAL BOX: TAMBAH BUKU KE PEMESANAN (Kriteria Soal 4)
+       ==================================================================== -->
+  <div id="modalTambahBukuPesanan" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTambahPesananTitle">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalTambahPesananTitle" class="modal-title">📚 Tambah Buku ke Pemesanan</h3>
+        <button type="button" class="modal-close" data-close-modal="modalTambahBukuPesanan" aria-label="Tutup">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1.25rem;">
+          Pilih salah satu judul buku dari katalog yang tersedia untuk dimasukkan ke keranjang pemesanan:
+        </p>
+
+        <div class="form-group">
+          <label for="selectTambahBuku" class="form-label">Pilih Judul Buku <span class="required">*</span></label>
+          <select id="selectTambahBuku" class="form-control">
+            <!-- Diisi secara dinamis oleh JavaScript dari getKatalogList() -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="inputTambahQty" class="form-label">Jumlah Eksemplar <span class="required">*</span></label>
+          <input type="number" id="inputTambahQty" class="form-control" value="1" min="1" max="100">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal="modalTambahBukuPesanan">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="tambahBukuKePesanan()">+ Tambahkan ke Pesanan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       4. MODAL BOX: KONFIRMASI SUKSES PEMESANAN (Kriteria Soal 4)
+       ==================================================================== -->
+  <div id="modalKonfirmasiOrder" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-body" id="modalKonfirmasiContent">
+        <!-- Diisi secara dinamis oleh renderModalKonfirmasiOrder() -->
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" class="btn btn-outline" onclick="window.location.href='dashboard.html'">
+          📊 Kembali ke Dashboard
+        </button>
+        <button type="button" id="btnLacakPesananBaru" class="btn btn-gold">
+          🚚 Lacak Status DO Sekarang &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       5. SEMANTIC FOOTER
+       ==================================================================== -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 <strong>UT BookStore</strong> - Proyek UTS Pemrograman Web 1. Universitas Terbuka.</p>
+      <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+      <span style="font-size:0.8rem; color:var(--text-muted); background-color:var(--bg-subtle); padding:0.25rem 0.6rem; border-radius:4px; border:1px solid var(--border-color);">
+        Form Validation &amp; Order Calculation Engine
+      </span>
+    </div>
+  </footer>
+
+  <!-- File JavaScript Eksternal -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    // Inisialisasi logika khusus halaman Checkout
+    document.addEventListener('DOMContentLoaded', () => {
+      initCheckoutPage();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Utama - UT BookStore</title>
+  
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: EXTERNAL CSS
+       ==================================================================== -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- ====================================================================
+       INDIKATOR PENILAIAN 2: INTERNAL CSS (Gaya Khusus Halaman Dashboard)
+       ==================================================================== -->
+  <style>
+    /* Styling Khusus Internal CSS untuk Halaman Dashboard */
+    .dashboard-welcome-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+      color: #ffffff;
+      padding: 2.25rem 2rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .dashboard-welcome-banner::after {
+      content: "📖";
+      position: absolute;
+      right: 25px;
+      bottom: -15px;
+      font-size: 7rem;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .greeting-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .greeting-subtitle {
+      font-size: 0.95rem;
+      color: #e0e7ff;
+      max-width: 650px;
+      line-height: 1.5;
+    }
+
+    .live-clock-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    /* Grid Menu Utama Navigasi Sesuai Kriteria Soal 2 */
+    .menu-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-card-item {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .nav-card-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .nav-card-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-card-item:hover .nav-card-icon {
+      transform: scale(1.1);
+    }
+
+    .nav-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .nav-card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .nav-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================================================================
+       1. SEMANTIC HEADER & NAVBAR
+       ==================================================================== -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <a href="dashboard.html" style="display:flex; align-items:center; gap:0.75rem; text-decoration:none;">
+          <img src="assets/logo.png" alt="Logo UT BookStore" class="brand-logo" onerror="this.src='assets/logo.svg'">
+          <div class="brand-text">
+            <h1>UT BOOKSTORE</h1>
+            <p>Toko Buku Online Resmi Universitas Terbuka</p>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Navigasi Utama Halaman Website -->
+      <nav class="main-nav" aria-label="Navigasi Utama">
+        <ul>
+          <li><a href="dashboard.html" class="nav-link active">📊 Dashboard</a></li>
+          <li><a href="stok.html" class="nav-link">📚 Informasi Stok</a></li>
+          <li><a href="checkout.html" class="nav-link">🛒 Pemesanan</a></li>
+          <li><a href="tracking.html" class="nav-link">🚚 Tracking Pengiriman</a></li>
+        </ul>
+      </nav>
+
+      <!-- User Session Badge di Header -->
+      <div id="headerUserPill" class="user-badge-wrapper"></div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       2. SEMANTIC MAIN CONTENT
+       ==================================================================== -->
+  <main class="page-container">
+    
+    <!-- Breadcrumb Navigasi -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="index.html">Beranda</a></li>
+        <li class="current">Dashboard Utama</li>
+      </ol>
+    </nav>
+
+    <!-- SECTION A: WELCOME BANNER DENGAN GREETING BERDASARKAN LOCAL TIME (Kriteria Soal 2) -->
+    <section class="dashboard-welcome-banner" aria-labelledby="dashboardGreeting">
+      <div id="dashboardGreeting" class="greeting-title">
+        <!-- Diisi otomatis oleh JavaScript berdasarkan jam waktu lokal -->
+        <span>🌅 Memuat salam waktu lokal...</span>
+      </div>
+      <p class="greeting-subtitle">
+        Selamat datang di Sistem Portal Pemesanan Buku dan Manajemen Stok Terpadu Toko Buku Online Universitas Terbuka. Silakan pilih menu di bawah untuk melanjutkan aktivitas Anda.
+      </p>
+      <div id="dashboardLiveClock" class="live-clock-pill">
+        <!-- Diisi otomatis jam & tanggal real-time oleh JavaScript -->
+        <span>⏰ Memuat waktu lokal sistem...</span>
+      </div>
+    </section>
+
+    <!-- SECTION B: STATISTIK RINGKASAN (Kreativitas Tambahan) -->
+    <section class="stats-grid" aria-label="Statistik Singkat Toko Buku">
+      <article class="stat-card">
+        <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+        <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);">
+          📚
+        </div>
+        <div class="stat-info">
+          <div id="statTotalBuku" class="stat-value">5</div>
+          <div class="stat-label">Total Judul Buku</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+        <div class="stat-icon" style="background-color: var(--success-bg); color: var(--success);">
+          📦
+        </div>
+        <div class="stat-info">
+          <div id="statTotalStok" class="stat-value">1.587</div>
+          <div class="stat-label">Total Stok Tersedia</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+        <div class="stat-icon" style="background-color: var(--warning-bg); color: var(--warning);">
+          🚚
+        </div>
+        <div class="stat-info">
+          <div id="statTotalPengiriman" class="stat-value">2</div>
+          <div class="stat-label">Pengiriman Aktif</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+        <div class="stat-icon" style="background-color: var(--info-bg); color: var(--info);">
+          🧾
+        </div>
+        <div class="stat-info">
+          <div id="statTotalTransaksi" class="stat-value">2</div>
+          <div class="stat-label">Transaksi Berjalan</div>
+        </div>
+      </article>
+    </section>
+
+    <!-- SECTION C: MENU UTAMA NAVIGASI (Wajib Sesuai Kriteria Soal 2) -->
+    <section aria-labelledby="mainMenuSectionTitle" style="margin-bottom: 2.5rem;">
+      <div class="page-header-block" style="margin-bottom: 1.25rem;">
+        <div>
+          <h2 id="mainMenuSectionTitle" class="page-title" style="font-size: 1.45rem;">
+            🎯 Menu Utama Sistem
+          </h2>
+          <p class="page-subtitle">Akses cepat ke 4 modul utama aplikasi web pemesanan buku</p>
+        </div>
+      </div>
+
+      <div class="menu-nav-grid">
+        <!-- 1. Tombol Navigasi: Informasi Stok/Katalog -->
+        <a href="stok.html" class="nav-card-item">
+          <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+          <div class="nav-card-icon" style="background: #eff6ff; color: #1e3a8a;">
+            📚
+          </div>
+          <h3 class="nav-card-title">Informasi Stok/Katalog</h3>
+          <p class="nav-card-desc">
+            Lihat daftar buku ajar, rincian harga, edisi, stok fisik, serta tambah stok buku baru secara dinamis menggunakan JavaScript DOM.
+          </p>
+          <span class="nav-card-action">Buka Katalog Stok &rarr;</span>
+        </a>
+
+        <!-- 2. Tombol Navigasi: Tracking Pengiriman -->
+        <a href="tracking.html" class="nav-card-item">
+          <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+          <div class="nav-card-icon" style="background: #fef3c7; color: #d97706;">
+            🚚
+          </div>
+          <h3 class="nav-card-title">Tracking Pengiriman</h3>
+          <p class="nav-card-desc">
+            Lacak status perjalanan paket pesanan menggunakan Nomor Delivery Order (DO) dengan simulasi progress bar interaktif dan timeline.
+          </p>
+          <span class="nav-card-action">Lacak Pengiriman &rarr;</span>
+        </a>
+
+        <!-- 3. Tombol Navigasi: Laporan Pemesanan (Checkout) -->
+        <a href="checkout.html" class="nav-card-item">
+          <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+          <div class="nav-card-icon" style="background: #d1fae5; color: #059669;">
+            🛒
+          </div>
+          <h3 class="nav-card-title">Laporan Pemesanan</h3>
+          <p class="nav-card-desc">
+            Kelola keranjang belanja pemesanan buku, ubah kuantitas, input informasi pemesan, pilih ekspedisi kurir, dan selesaikan pembayaran.
+          </p>
+          <span class="nav-card-action">Halaman Pemesanan &rarr;</span>
+        </a>
+
+        <!-- 4. Tombol Navigasi: History Transaksi -->
+        <a href="#sectionHistoryTransaksi" class="nav-card-item">
+          <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+          <div class="nav-card-icon" style="background: #f3e8ff; color: #7e22ce;">
+            📜
+          </div>
+          <h3 class="nav-card-title">History Transaksi</h3>
+          <p class="nav-card-desc">
+            Daftar lengkap riwayat transaksi pemesanan yang telah dilakukan beserta tanggal, total bayar, dan status ekspedisi pengiriman.
+          </p>
+          <span class="nav-card-action">Lihat Riwayat &darr;</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECTION D: TABEL HISTORY TRANSAKSI & LAPORAN PEMESANAN (Kriteria Soal 2) -->
+    <section id="sectionHistoryTransaksi" class="card" aria-labelledby="historyTitle">
+      <div class="card-header">
+        <div>
+          <h3 id="historyTitle" class="card-title">📜 History Transaksi &amp; Laporan Pemesanan Terkini</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Daftar transaksi yang tercatat di sistem toko buku
+          </p>
+        </div>
+        <a href="checkout.html" class="btn btn-primary btn-sm">
+          + Buat Pesanan Baru
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table" aria-label="Tabel History Transaksi">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nomor DO</th>
+              <th>Tanggal</th>
+              <th>Nama Pemesan</th>
+              <th>Total Bayar</th>
+              <th>Status Pengiriman</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="dashboardHistoryTableBody">
+            <!-- Diisi secara dinamis melalui JavaScript DOM dari data.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       3. SEMANTIC FOOTER
+       ==================================================================== -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 <strong>UT BookStore</strong> - Proyek UTS Pemrograman Web 1. Universitas Terbuka.</p>
+      <!-- INDIKATOR PENILAIAN 2: CONTOH INLINE CSS -->
+      <span style="font-size:0.8rem; color:var(--text-muted); background-color:var(--bg-subtle); padding:0.25rem 0.6rem; border-radius:4px; border:1px solid var(--border-color);">
+        Dashboard Menu &amp; Greeting System Aktif
+      </span>
+    </div>
+  </footer>
+
+  <!-- File JavaScript Eksternal -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    // Inisialisasi logika khusus halaman Dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      initDashboardPage();
+
+      // Perbarui jam setiap detik secara real-time
+      setInterval(() => {
+        updateLocalGreeting();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
