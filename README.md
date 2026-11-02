@@ -1,4 +1,4 @@
-# Proyek UTS Pemrograman Web 1 - Toko Buku Online Universitas Terbuka
+# Proyek UTS Pemrograman Web 
 
 Aplikasi web toko buku online berbasis front-end murni (HTML5, CSS3, dan Vanilla JavaScript) yang dirancang khusus untuk memenuhi seluruh indikator penilaian dan spesifikasi tugas **Ujian Tengah Semester (UTS) Pemrograman Web 1**.
 
